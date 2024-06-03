@@ -13,15 +13,17 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# define BUFFER_SIZE 3
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 3
+# endif
 
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
 
-char	*ft_strchr(const char *str, int c);
-size_t	ft_strlen(char	*s);
-char	*ft_strcat(char *dest, char *src);
-char	*ft_strcpy(char *dest, char *src);
+char	*ft_strjoin(const char *s1, const char *s2);
+char	*ft_strchr(const char *s, int c);
+size_t	ft_strlen(const char *str);
+char	*get_next_line(int fd);
 
 #endif

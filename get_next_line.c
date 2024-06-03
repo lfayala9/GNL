@@ -12,54 +12,71 @@
 
 #include "get_next_line.h"
 
-int	find_break(char *buffer)
+char	*read_file(int fd, char *buffer)
 {
-	int	i;
+	char	*tmp_buff;
+	ssize_t	bytes;
 
-	i = 0;
-	while (buffer[i] && buffer[i] != '\n')
-		i++;
-	return (i);
+	bytes = 1;
+	tmp_buff = (char *)malloc(BUFFER_SIZE + 1 * (sizeof(char)));
+	if (!tmp_buff)
+		return (NULL);
+	while (bytes > 0 && ft_strchr(buffer, '\n') == 0)
+	{
+		bytes = read(fd, tmp_buff, BUFFER_SIZE);
+		if (bytes == -1)
+			return (free(tmp_buff), NULL);
+		tmp_buff[bytes] = '\0';
+		buffer = ft_strjoin(buffer, tmp_buff);
+		if (buffer == 0)
+			return (free(buffer), NULL);
+	}
+	free (tmp_buff);
+	return (buffer);
 }
 
-char	*find_line(int fd, char *buffer)
+char	*get_line(char *buffer)
 {
-	ssize_t	bytes;
-	size_t	size_buf;
-	char	*buf;
-	char	*tmp;
+	char	*line;
+	int		line_break;
 
-	buf = (char *)malloc(BUFFER_SIZE + 1 * sizeof(char));
-	if (buf == NULL)
+	line_break = 0;
+	if (buffer[line_break])
 		return (NULL);
-	bytes = 1;
-	size_buf = ft_strlen(buffer) + ft_strlen(buf);
-	while (bytes > 0)
+	while (buffer[line_break] && buffer[line_break] != '\n')
+		line_break++;
+	if (buffer[line_break] == '\n')
+		line_break++;
+	line = (char *)malloc(sizeof(char) * (line_break + 1));
+	if (!line)
+		return (NULL);
+	line_break = 0;
+	while (buffer[line_break] && buffer[line_break] != '\n')
 	{
-		bytes = read(fd, buffer, BUFFER_SIZE);
-		buf[bytes] = '\0';
-		tmp = buffer;
-		buffer = (char *)malloc((size_buf + 1) * sizeof(char));
-		ft_strcpy(buffer, tmp);
-		ft_strcat(buffer, buf);
-		free(tmp);
-		if (ft_strchr(buf, '\n'))
-			break ;
+		line[line_break] = buffer[line_break];
+		line_break++;
 	}
-	free(buf);
-	return (buffer);
+	if (buffer[line_break] == '\n')
+		line[line_break++] = '\n';
+	line[line_break] = '\0';
+	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer = {0};
+	static char	*buffer;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	if ((fd < 0 || BUFFER_SIZE >= 0) || read(fd, 0, 0) > 0)
 		return (NULL);
-	else
-	{
-		line = find_line(fd, buffer);
-	}
+	buffer = read_file(fd, buffer);
+	if (!buffer)
+		return (NULL);
+	line = get_line(buffer);
+	buffer = get_storage(buffer);
 	return (line);
+}
+int	main()
+{
+	return 0;
 }
