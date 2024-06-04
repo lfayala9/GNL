@@ -86,17 +86,20 @@ size_t	ft_strlcat(char *dest, const char *src, size_t size)
 	return (src_len);
 }
 
-char	*ft_strjoin(const char *s1, const char *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	size_t	i;
 	size_t	len;
 	char	*join;
 
+	if (!s1 || !s2)
+		return (NULL);
 	len = ft_strlen(s1) + ft_strlen(s2);
 	join = (char *)malloc(len + 1 * (sizeof(char)));
-	if ((s1 == NULL || s2 == NULL) || join == NULL)
+	if (join == NULL)
 		return (NULL);
 	ft_strlcpy(join, s1, len + 1);
 	ft_strlcat(join, s2, len + 1);
+	free(s1);
 	return (join);
 }

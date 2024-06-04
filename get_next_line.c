@@ -15,10 +15,12 @@
 char	*read_file(int fd, char *buffer)
 {
 	char	*tmp_buff;
-	ssize_t	bytes;
+	int		bytes;
 
+	if (read(fd, 0, 0) < 0)
+		return (free(buffer), NULL);
 	bytes = 1;
-	tmp_buff = (char *)malloc(BUFFER_SIZE + 1 * (sizeof(char)));
+	tmp_buff = (char *)malloc(BUFFER_SIZE + 1);
 	if (!tmp_buff)
 		return (NULL);
 	while (bytes > 0 && ft_strchr(buffer, '\n') == 0)
@@ -62,21 +64,48 @@ char	*get_line(char *buffer)
 	return (line);
 }
 
+char	*store_buffer(char *buffer)
+{
+	char	*tmp_buf;
+	int		line_break;
+	int		i;
+
+	line_break = 0;
+	i = 0;
+	if (!buffer[line_break])
+		return (free(buffer), NULL);
+	while (buffer[line_break] && buffer[line_break] != '\n')
+		line_break++;
+	if (buffer[line_break] == '\n')
+		line_break++;
+	tmp_buf = malloc((ft_strlen(buffer) - line_break + 1) * sizeof(char));
+	if (!tmp_buf)
+		return (free(buffer), NULL);
+	while (buffer[line_break])
+		tmp_buf[i++] = buffer[line_break++];
+	tmp_buf[i] = '\0';
+	free(buffer);
+	return (tmp_buf);
+}
+
 char	*get_next_line(int fd)
 {
 	static char	*buffer;
 	char		*line;
 
-	if ((fd < 0 || BUFFER_SIZE >= 0) || read(fd, 0, 0) > 0)
+	if (fd < 0 || BUFFER_SIZE < 1)
 		return (NULL);
 	buffer = read_file(fd, buffer);
 	if (!buffer)
 		return (NULL);
 	line = get_line(buffer);
-	buffer = get_storage(buffer);
+	buffer = store_buffer(buffer);
 	return (line);
 }
 int	main()
 {
+	int fd;
+	fd = open("text.txt", O_RDONLY);
+	printf("%s", get_next_line(fd));
 	return 0;
 }
