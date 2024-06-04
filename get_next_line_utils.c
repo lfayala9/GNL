@@ -12,34 +12,27 @@
 
 #include "get_next_line.h"
 
-char	*ft_strchr(const char *s, int c)
+size_t	ft_strlen(const char *c)
 {
-	int				i;
-	unsigned char	ch;
+	int	len;
 
-	ch = (char)c;
-	i = 0;
-	while (s[i])
-	{
-		if (s[i] == ch)
-			return ((char *)&s[i]);
-		i++;
-	}
-	if (ch == '\0')
-		return ((char *)&s[i]);
-	return (NULL);
+	len = 0;
+	if (c == NULL)
+		return (0);
+	while (c[len] != '\0')
+		len++;
+	return (len);
 }
 
-size_t	ft_strlen(const char *str)
+char	*ft_strchr(char *s, int c)
 {
-	int	i;
-
-	i = 0;
-	while (str[i] != '\0')
-	{
-		i++;
-	}
-	return (i);
+	if (s == NULL)
+		return (NULL);
+	while (*s != '\0' && *s != (char)c)
+		s++;
+	if (*s == (char)c)
+		return ((char *)s);
+	return (0);
 }
 
 size_t	ft_strlcpy(char *dest, const char *src, size_t size)
@@ -51,8 +44,8 @@ size_t	ft_strlcpy(char *dest, const char *src, size_t size)
 	len = ft_strlen(src);
 	if (!src || !dest)
 		return (0);
-	while (size > 1 && src[i])
-	{	
+	while (size > 1 && src[i] != '\0')
+	{
 		dest[i] = src[i];
 		i++;
 		size--;
@@ -77,7 +70,7 @@ size_t	ft_strlcat(char *dest, const char *src, size_t size)
 		src_len = src_len + size;
 	else
 		src_len = src_len + dest_len;
-	while (src[i] && (dest_len + i) < size - 1)
+	while (src[i] != '\0' && (dest_len + i) < size - 1)
 	{
 		dest[dest_len + i] = src[i];
 		i++;
@@ -88,18 +81,20 @@ size_t	ft_strlcat(char *dest, const char *src, size_t size)
 
 char	*ft_strjoin(char *s1, char *s2)
 {
-	size_t	i;
 	size_t	len;
 	char	*join;
 
-	if (!s1 || !s2)
-		return (NULL);
 	len = ft_strlen(s1) + ft_strlen(s2);
 	join = (char *)malloc(len + 1 * (sizeof(char)));
 	if (join == NULL)
 		return (NULL);
-	ft_strlcpy(join, s1, len + 1);
-	ft_strlcat(join, s2, len + 1);
-	free(s1);
+	if (s1)
+		ft_strlcpy(join, s1, len + 1);
+	else
+		join[0] = '\0';
+	if (s2)
+		ft_strlcat(join, s2, len + 1);
+	if (s1)
+		free(s1);
 	return (join);
 }

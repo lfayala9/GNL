@@ -43,7 +43,7 @@ char	*get_line(char *buffer)
 	int		line_break;
 
 	line_break = 0;
-	if (buffer[line_break])
+	if (!buffer[line_break])
 		return (NULL);
 	while (buffer[line_break] && buffer[line_break] != '\n')
 		line_break++;
@@ -102,10 +102,18 @@ char	*get_next_line(int fd)
 	buffer = store_buffer(buffer);
 	return (line);
 }
-int	main()
-{
-	int fd;
-	fd = open("text.txt", O_RDONLY);
-	printf("%s", get_next_line(fd));
-	return 0;
-}
+
+// int	main()
+// {
+// 	int fd;
+// 	char *line;
+// 	fd = open("text.txt", O_RDONLY);
+//     while ((line = get_next_line(fd)) != NULL)
+//     {
+//         printf("%s", line);
+//         free(line);
+//     }
+
+// 	close(fd);
+// 	return 0;
+// }
