@@ -31,9 +31,11 @@ char	*read_file(int fd, char *buffer)
 			return (free(tmp_buff), NULL);
 		}
 		tmp_buff[bytes] = '\0';
+		// printf("Leído del archivo: %s\n", tmp_buff);
 		buffer = ft_strjoin(buffer, tmp_buff);
 		if (buffer == 0)
 			return (free(tmp_buff), NULL);
+		// printf("Buffer actual: %s\n", buffer);
 	}
 	return (free(tmp_buff), buffer);
 }
@@ -102,6 +104,30 @@ char	*get_next_line(int fd)
 	buffer = store_buffer(buffer);
 	return (line);
 }
+
+// int main(void)
+// {
+// 	int fd;
+// 	char *buffer;
+
+// 	fd = open("text.txt", O_RDONLY); // Abre el archivo test.txt
+// 	if (fd == -1)
+// 	{
+// 		printf("Error al abrir el archivo\n");
+// 		return (1);
+// 	}
+// 	buffer = NULL;
+// 	buffer = read_file(fd, buffer); // Llama a read_file
+// 	if (!buffer)
+// 	{
+// 		printf("Error al leer el archivo\n");
+// 		return (1);
+// 	}
+// 	printf("Contenido final del buffer: %s\n", buffer); // Imprime el contenido final del buffer
+// 	free(buffer);
+// 	close(fd);
+// 	return (0);
+// }
 
 // int	main(int ac, char **av)
 // {
