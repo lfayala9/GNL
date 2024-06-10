@@ -12,6 +12,18 @@
 
 #include "get_next_line.h"
 
+int find_break(char *buffer)
+{
+	int line_break;
+
+	line_break = 0;
+	while (buffer[line_break] && buffer[line_break] != '\n')
+		line_break++;
+	if (buffer[line_break] == '\n')
+		line_break++;
+	return (line_break);
+}
+
 char	*read_file(int fd, char *buffer)
 {
 	char	*tmp_buff;
@@ -48,10 +60,7 @@ char	*getting_line(char *buffer)
 	line_break = 0;
 	if (!buffer[line_break])
 		return (NULL);
-	while (buffer[line_break] && buffer[line_break] != '\n')
-		line_break++;
-	if (buffer[line_break] == '\n')
-		line_break++;
+	line_break = find_break(buffer);
 	line = (char *)malloc(sizeof(char) * (line_break + 1));
 	if (!line)
 		return (NULL);
@@ -77,10 +86,7 @@ char	*store_buffer(char *buffer)
 	i = 0;
 	if (!buffer[line_break])
 		return (free(buffer), NULL);
-	while (buffer[line_break] && buffer[line_break] != '\n')
-		line_break++;
-	if (buffer[line_break] == '\n')
-		line_break++;
+	line_break = find_break(buffer);
 	tmp_buf = malloc((ft_strlen(buffer) - line_break + 1) * sizeof(char));
 	if (!tmp_buf)
 		return (free(buffer), NULL);
