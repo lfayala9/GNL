@@ -12,9 +12,9 @@
 
 #include "get_next_line.h"
 
-int find_break(char *buffer)
+int	get_line_break(char	*buffer)
 {
-	int line_break;
+	int	line_break;
 
 	line_break = 0;
 	while (buffer[line_break] && buffer[line_break] != '\n')
@@ -26,33 +26,31 @@ int find_break(char *buffer)
 
 char	*read_file(int fd, char *buffer)
 {
-	char	*tmp_buff;
-	int		bytes;
+	char	*tmp_buf;
+	ssize_t	bytes;
 
-	if (read(fd, 0, 0) < 0)
-		return(free(buffer), NULL);
 	bytes = 1;
-	tmp_buff = (char *)malloc(BUFFER_SIZE + 1);
-	if (!tmp_buff)
+	tmp_buf = (char *)malloc(BUFFER_SIZE + 1);
+	if (!tmp_buf)
 		return (NULL);
-	while (bytes > 0 && ft_strchr(buffer, '\n') == 0)
+	while (bytes > 0 && !ft_strchr(buffer, '\n'))
 	{
-		bytes = read(fd, tmp_buff, BUFFER_SIZE);
+		bytes = read(fd, tmp_buf, BUFFER_SIZE);
 		if (bytes == -1)
+			return (free(tmp_buf), NULL);
+		else
 		{
-			return (free(tmp_buff), NULL);
+			tmp_buf[bytes] = '\0';
+			buffer = ft_strjoin(buffer, tmp_buf);
 		}
-		tmp_buff[bytes] = '\0';
-		// printf("Leído del archivo: %s\n", tmp_buff);
-		buffer = ft_strjoin(buffer, tmp_buff);
 		if (buffer == 0)
-			return (free(tmp_buff), NULL);
-		// printf("Buffer actual: %s\n", buffer);
+			return (free(tmp_buf), NULL);
 	}
-	return (free(tmp_buff), buffer);
+	free(tmp_buf);
+	return (buffer);
 }
 
-char	*getting_line(char *buffer)
+char	*get_line(char *buffer)
 {
 	char	*line;
 	int		line_break;
@@ -60,7 +58,7 @@ char	*getting_line(char *buffer)
 	line_break = 0;
 	if (!buffer[line_break])
 		return (NULL);
-	line_break = find_break(buffer);
+	line_break = get_line_break(buffer);
 	line = (char *)malloc(sizeof(char) * (line_break + 1));
 	if (!line)
 		return (NULL);
@@ -78,22 +76,30 @@ char	*getting_line(char *buffer)
 
 char	*store_buffer(char *buffer)
 {
-	char	*tmp_buf;
+	char	*new_buff;
 	int		line_break;
 	int		i;
+	int		len;
 
-	line_break = 0;
 	i = 0;
-	if (!buffer[line_break])
-		return (free(buffer), NULL);
-	line_break = find_break(buffer);
-	tmp_buf = malloc((ft_strlen(buffer) - line_break + 1) * sizeof(char));
-	if (!tmp_buf)
-		return (free(buffer), NULL);
+	if (!buffer[0])
+	{
+		free(buffer);
+		return (NULL);
+	}
+	line_break = get_line_break(buffer);
+	len = ft_strlen(buffer) - line_break + 1;
+	new_buff = (char *)malloc(len * sizeof(char));
+	if (!new_buff)
+	{
+		free(buffer);
+		return (NULL);
+	}
 	while (buffer[line_break])
-		tmp_buf[i++] = buffer[line_break++];
-	tmp_buf[i] = '\0';
-	return (free(buffer), tmp_buf);
+		new_buff[i++] = buffer[line_break++];
+	new_buff[i] = '\0';
+	free(buffer);
+	return (new_buff);
 }
 
 char	*get_next_line(int fd)
@@ -106,49 +112,7 @@ char	*get_next_line(int fd)
 	buffer = read_file(fd, buffer);
 	if (!buffer)
 		return (NULL);
-	line = getting_line(buffer);
+	line = get_line(buffer);
 	buffer = store_buffer(buffer);
 	return (line);
 }
-
-// int main(void)
-// {
-// 	int fd;
-// 	char *buffer;
-
-// 	fd = open("text.txt", O_RDONLY); // Abre el archivo test.txt
-// 	if (fd == -1)
-// 	{
-// 		printf("Error al abrir el archivo\n");
-// 		return (1);
-// 	}
-// 	buffer = NULL;
-// 	buffer = read_file(fd, buffer); // Llama a read_file
-// 	if (!buffer)
-// 	{
-// 		printf("Error al leer el archivo\n");
-// 		return (1);
-// 	}
-// 	printf("Contenido final del buffer: %s\n", buffer); // Imprime el contenido final del buffer
-// 	free(buffer);
-// 	close(fd);
-// 	return (0);
-// }
-
-// int	main(int ac, char **av)
-// {
-// 	int fd;
-// 	char *line;
-
-// 	if (ac > 1)
-// 	{
-// 		fd = open(av[1], O_RDONLY);
-//     	while ((line = get_next_line(fd)) != NULL)
-//     	{
-//         	printf("line: -> %s", line);
-//         	free(line);
-//     	}
-// 	}
-// 	close(fd);
-// 	return 0;
-// }
